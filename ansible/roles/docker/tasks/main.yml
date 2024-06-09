@@ -1,0 +1,23 @@
+---
+- name: Include geerlingguy.pip role
+  include_role:
+    name: geerlingguy.pip
+  vars:
+    pip_install_packages:
+      - name: docker
+
+- name: Include geerlingguy.docker role
+  include_role:
+    name: geerlingguy.docker
+  vars:
+    docker_edition: "{{ my_docker_edition }}"
+    docker_package: "{{ my_docker_package }}"
+    docker_package_state: "{{ my_docker_package_state }}"
+    docker_service_state: "{{ my_docker_service_state }}"
+    docker_service_enabled: "{{ my_docker_service_enabled }}"
+    docker_users: "{{ my_docker_users }}"
+    docker_install_compose_plugin: "{{ my_docker_install_compose_plugin }}"
+
+- name: Include optional systemd setup
+  include_tasks: optional_compose_systemd_setup.yml
+  when: include_optional_compose_systemd_setup

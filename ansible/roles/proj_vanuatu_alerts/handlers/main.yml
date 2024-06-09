@@ -1,0 +1,9 @@
+---
+# NOTE: I think this handler is in te wrong place
+
+- name: restart docker-compose
+  docker_compose:
+    project_src: "{{ app_directory }}"
+    state: present
+    restarted: true
+  become: true

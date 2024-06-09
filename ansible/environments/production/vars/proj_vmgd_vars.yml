@@ -1,0 +1,5 @@
+app_name: vmgd-api
+app_port: 7010
+domain: unofficial-vmgd-api.michaeltoohig.com
+git_repo_url: https://github.com/michaeltoohig/unofficial-vmgd-api.git
+git_branch: master

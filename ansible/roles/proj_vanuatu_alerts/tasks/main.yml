@@ -1,0 +1,6 @@
+---
+- name: Include deploy app
+  include_tasks: task-deploy-app.yml
+
+- name: Include Systemd service
+  include_tasks: task-systemd-service.yml

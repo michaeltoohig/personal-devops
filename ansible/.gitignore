@@ -1,0 +1,3 @@
+vault_password
+environments/**/vars/*_vault.yml
+environments/**/inventory

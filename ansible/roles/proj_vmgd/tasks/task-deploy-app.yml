@@ -1,0 +1,28 @@
+---
+- name: Clone the repository
+  git:
+    repo: "{{ git_repo_url }}"
+    dest: "{{ app_directory }}"
+    version: "{{ git_branch }}"
+  become: true
+
+- name: Copy env file
+  template:
+    src: "../templates/env.template.j2"
+    dest: "{{ app_directory }}/data/.env.{{ environment_name }}"
+
+- name: Copy compose env file
+  template:
+    src: "../templates/compose.env.j2"
+    dest: "{{ app_directory }}/data/.env.compose"
+
+- name: Build and run Docker containers
+  community.docker.docker_compose_v2:
+    project_src: "{{ app_directory }}"
+    env_files:
+      - data/.env.compose
+    files:
+      - "docker-compose.{{ environment_name }}.yml"
+    state: present
+    recreate: always
+  become: true

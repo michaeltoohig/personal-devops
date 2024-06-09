@@ -1,0 +1,9 @@
+---
+my_docker_edition: "ce"
+my_docker_package: "docker-ce"
+my_docker_package_state: "present"
+my_docker_service_state: "started"
+my_docker_service_enabled: true
+my_docker_install_compose_plugin: true
+include_optional_systemd_setup: false
+systemd_setup_template: "../templates/docker-compose@.service.j2"

@@ -1,0 +1,7 @@
+---
+- name: Include optional_compose_systemd_setup task from docker role
+  vars:
+    systemd_setup_template: "../templates/systemd.service.j2"
+  include_role:
+    name: ../../roles/docker # HACK: this is fragile is there not a `@/` syntax such as vite?
+    tasks_from: optional_compose_systemd_setup.yml

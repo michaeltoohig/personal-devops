@@ -1,0 +1,17 @@
+---
+- name: Copy Docker Compose service template
+  template:
+    src: "{{ systemd_setup_template }}"
+    dest: /etc/systemd/system/docker-compose@{{ app_name }}.service
+  become: true
+  # notify:
+  #   - reload systemd
+  # when: ansible_service_mgr == "systemd"
+
+- name: Ensure Docker Compose service starts on boot
+  systemd:
+    name: docker-compose@{{ app_name }}
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
