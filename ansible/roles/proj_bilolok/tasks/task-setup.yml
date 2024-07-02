@@ -1,0 +1,31 @@
+---
+# NOTE: this may belong in common role once finalized
+
+- name: Create application group
+  group:
+    name: "{{ app_group }}"
+    gid: "{{ app_gid }}"
+    state: present
+
+- name: Create application user
+  user:
+    name: "{{ app_user }}"
+    uid: "{{ app_uid }}"
+    group: "{{ app_group }}"
+    # home: "{{ app_root }}"
+    shell: /usr/sbin/nologin
+    state: present
+
+- name: Create application root directory
+  file:
+    path: "{{ app_root }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: "0775"
+
+- name: Add app user to docker group
+  user:
+    name: "{{ app_user }}"
+    groups: docker
+    append: yes

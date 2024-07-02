@@ -1,8 +1,5 @@
 *.swp
 
-# temp ignore
-**/proj_bilolok
-
 # development references
 _ansible
 opentofu/_modules

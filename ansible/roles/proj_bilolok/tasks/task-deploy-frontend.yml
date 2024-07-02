@@ -1,0 +1,16 @@
+---
+- name: Create www_directory
+  file:
+    path: "{{ www_directory }}"
+    state: directory
+    mode: "0775"
+    group: www-data
+
+- name: Copy built app to remote live directory
+  synchronize:
+    src: "{{ local_frontend_directory }}/dist"
+    dest: "{{ www_directory }}"
+    recursive: true
+    delete: true
+    rsync_opts:
+      - "--chown=:www-data"

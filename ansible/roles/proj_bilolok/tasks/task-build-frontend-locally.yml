@@ -1,0 +1,10 @@
+---
+- name: Copy production frontend environment file.
+  template:
+    src: "../templates/frontend.env.j2"
+    dest: "{{ local_frontend_directory }}/.env.production"
+  delegate_to: localhost
+
+- name: Wait for user confirmation before proceeding
+  pause:
+    prompt: "Manually build {{ local_frontend_directory }} first. Press Enter to continue and deploy to the remote server, or Ctrl+C to abort."

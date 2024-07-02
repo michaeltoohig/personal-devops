@@ -1,0 +1,14 @@
+---
+- name: Include setup app
+  include_tasks: task-setup.yml
+
+- name: Include deploy frontend
+  include_tasks: task-deploy-frontend.yml
+
+- name: Include deploy app
+  include_tasks: task-deploy-app.yml
+# - name: Include Nginx site
+#   include_tasks: task-nginx-site.yml
+#
+# - name: Include Systemd service
+#   include_tasks: task-systemd-service.yml

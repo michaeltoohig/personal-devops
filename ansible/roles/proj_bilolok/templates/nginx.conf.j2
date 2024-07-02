@@ -1,0 +1,229 @@
+upstream backend_server {
+  server 127.0.0.1:{{ docker_backend_port }} fail_timeout=0;
+}
+
+upstream upload_server {
+  server 127.0.0.1:{{ docker_tusd_port }} fail_timeout=0;
+}
+
+upstream image_server {
+  server 127.0.0.1:{{ docker_thumbor_proxy_port }} fail_timeout=0;
+}
+
+upstream og_server {
+  server 127.0.0.1:{{ docker_og_port }} fail_timeout=0;
+}
+
+server {
+  listen [::]:80;
+  listen 80;
+  server_name {{ domain }} www.{{ domain }};
+
+  location / {
+    #if ($http_user_agent ~* "linkedinbot|googlebot|yahoo|bingbot|baiduspider|yandex|yeti|yodaobot|gigabot|ia_archiver|facebookexternalhit|twitterbot|developers\.google\.com") {
+    #  proxy_pass http://og_server;
+    #  break;
+    #}
+    return 301 https://{{ domain }}$request_uri;
+  }
+}
+
+server {
+  listen [::]:443 ssl http2;
+  listen 443 ssl http2;
+  server_name www.{{ domain }};
+
+  ssl_certificate /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
+  ssl_trusted_certificate /etc/letsencrypt/live/{{ domain }}/chain.pem;
+
+  include snippets/gzip.conf;
+  include snippets/ssl.conf;
+
+  location / {
+    #if ($http_user_agent ~* "linkedinbot|googlebot|yahoo|bingbot|baiduspider|yandex|yeti|yodaobot|gigabot|ia_archiver|facebookexternalhit|twitterbot|developers\.google\.com") {
+    #  proxy_pass http://og_server;
+    #  break;
+    #}
+    return 301 https://{{ domain }}$request_uri;
+  }
+}
+
+server {
+  listen [::]:443 ssl http2;
+  listen 443 ssl http2;
+  server_name {{ domain }};
+
+  ssl_certificate /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
+  ssl_trusted_certificate /etc/letsencrypt/live/{{ domain }}/chain.pem;
+
+  include snippets/gzip.conf;
+  include snippets/ssl.conf;
+
+  error_log /var/log/nginx/{{ domain }}-error.log;
+  access_log /var/log/nginx/{{ domain }}-access.log;
+
+  root {{ www_directory }}/dist;
+  index index.html;
+
+  location /.well-known/assetlinks.json {
+    alias {{ www_directory }}/assetlinks.json;
+  }
+
+  {% for html_file in html_files %}
+  location = /{{ html_file }} {
+    alias {{ www_directory }}/{{ html_file }}.html;
+    default_type text/html;
+  }
+  {% endfor %}
+
+  location / {
+    #if ($http_user_agent ~* "linkedinbot|googlebot|yahoo|bingbot|baiduspider|yandex|yeti|yodaobot|gigabot|ia_archiver|facebookexternalhit|twitterbot|developers\.google\.com") {
+    #  proxy_pass http://og_server;
+    #  break;
+    #}
+    try_files $uri $uri/ /index.html;
+  }
+}
+
+server {
+  listen [::]:80;
+  listen 80;
+  server_name {{ domain_api }};
+
+  include snippets/gzip.conf;
+  return 301 https://{{ domain_api }}$request_uri;
+}
+
+server {
+  listen [::]:443 ssl http2;
+  listen 443 ssl http2;
+  server_name {{ domain_api }};
+
+  ssl_certificate /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
+  ssl_trusted_certificate /etc/letsencrypt/live/{{ domain }}/chain.pem;
+
+  include snippets/gzip.conf;
+  include snippets/ssl.conf;
+
+  error_log /var/log/nginx/{{ domain_api }}-error.log;
+  access_log /var/log/nginx/{{ domain_api }}-access.log;
+
+  location / {
+    include proxy_params;
+    proxy_pass http://backend_server;
+  }
+}
+
+server {
+  listen [::]:80;
+  listen 80;
+  server_name {{ domain_image }};
+
+  include snippets/gzip.conf;
+
+  location / {
+    if ($http_user_agent ~* "linkedinbot|googlebot|yahoo|bingbot|baiduspider|yandex|yeti|yodaobot|gigabot|ia_archiver|facebookexternalhit|twitterbot|developers\.google\.com") {
+      proxy_pass http://image_server;
+      break;
+    }
+    return 301 https://{{ domain_image }}$request_uri;
+  }
+}
+
+server {
+  listen [::]:443 ssl http2;
+  listen 443 ssl http2;
+  server_name {{ domain_image }};
+
+  ssl_certificate /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
+  ssl_trusted_certificate /etc/letsencrypt/live/{{ domain }}/chain.pem;
+
+  include snippets/gzip.conf;
+  include snippets/ssl.conf;
+
+  error_log /var/log/nginx/{{ domain_image }}-error.log;
+  access_log /var/log/nginx/{{ domain_image }}-access.log;
+
+  location / {
+      include proxy_params;
+      proxy_pass http://image_server;
+  }
+}
+
+server {
+  listen [::]:80;
+  listen 80;
+  server_name {{ domain_upload }};
+
+  include snippets/gzip.conf;
+  return 301 https://{{ domain_upload }}$request_uri;
+}
+
+server {
+  listen [::]:443 ssl http2;
+  listen 443 ssl http2;
+  server_name {{ domain_upload }};
+
+  client_max_body_size 5M;
+
+  ssl_certificate /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
+  ssl_trusted_certificate /etc/letsencrypt/live/{{ domain }}/chain.pem;
+
+  include snippets/gzip.conf;
+  include snippets/ssl.conf;
+
+  error_log /var/log/nginx/{{ domain_upload }}-error.log;
+  access_log /var/log/nginx/{{ domain_upload }}-access.log;
+
+  location / {
+      include proxy_params;
+      proxy_pass http://upload_server;
+  }
+}
+
+server {
+  listen [::]:80;
+  listen 80;
+  server_name {{ domain_video }};
+
+  client_max_body_size 5M;
+
+  include snippets/gzip.conf;
+
+  error_log /var/log/nginx/{{ domain_video }}-error.log;
+  access_log /var/log/nginx/{{ domain_video }}-access.log;
+
+  # NOTE: could not make if statement to redirect users to https while allowing bots to try_files
+  location /videos {
+    alias {{ data_directory }}/videos;
+    try_files $uri =404;
+  }
+}
+
+server {
+  listen [::]:443 ssl http2;
+  listen 443 ssl http2;
+  server_name {{ domain_video }};
+
+  client_max_body_size 5M;
+
+  ssl_certificate /etc/letsencrypt/live/{{ domain }}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{ domain }}/privkey.pem;
+  ssl_trusted_certificate /etc/letsencrypt/live/{{ domain }}/chain.pem;
+
+  include snippets/gzip.conf;
+  include snippets/ssl.conf;
+
+  error_log /var/log/nginx/{{ domain_video }}-error.log;
+  access_log /var/log/nginx/{{ domain_video }}-access.log;
+
+  location /videos {
+    alias {{ data_directory }}/videos;
+    try_files $uri =404;
+  }
+}

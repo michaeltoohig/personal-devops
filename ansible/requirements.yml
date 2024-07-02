@@ -2,6 +2,7 @@
 collections:
   - name: devsec.hardening
 roles:
+  - name: geerlingguy.certbot
   - name: geerlingguy.docker
   - name: geerlingguy.pip
   - name: geerlingguy.nginx

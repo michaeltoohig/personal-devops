@@ -1,1 +1,6 @@
 environment_name: development
+
+bilolok_user: bilolok
+bilolok_uid: 1010
+bilolok_group: bilolok
+bilolok_gid: 1010

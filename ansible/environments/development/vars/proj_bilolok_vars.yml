@@ -1,0 +1,40 @@
+app_name: bilolok-dev
+local_project_directory: ../../../bilolok
+
+git_repo_url: https://github.com/michaeltoohig/bilolok.git
+git_branch: dev
+
+app_uid: "{{ bilolok_uid }}"
+app_user: "{{ bilolok_user }}"
+app_gid: "{{ bilolok_gid }}"
+app_group: "{{ bilolok_group }}"
+
+docker_backend_port: 6010
+docker_og_port: 6011
+docker_db_port: 6012
+docker_redis_port: 6014
+docker_tusd_port: 6016
+docker_thumbor_proxy_port: 6018
+
+domain: development.bilolok.com
+domain_api: api.development.bilolok.com
+domain_upload: upload.development.bilolok.com
+domain_image: image.development.bilolok.com
+domain_video: video.development.bilolok.com
+
+domains:
+  - "{{ domain }}"
+  - "www.{{ domain }}"
+  - "{{ domain_api }}"
+  - "{{ domain_upload }}"
+  - "{{ domain_image }}"
+  - "{{ domain_video }}"
+
+project_name: Bilolok Dev
+project_slug: bilolok-dev
+
+postgres_username: bilolok
+postgres_database: bilolok
+
+mail_from: no-reply@bilolok.com
+mail_from_name: Bilolok App

@@ -1,0 +1,19 @@
+---
+- name: Include geerlingguy.certbot role
+  include_role:
+    name: geerlingguy.certbot
+  vars:
+    certbot_script: "sudo certbot"
+    certbot_install_method: package
+    certbot_auto_renew: true
+    certbot_auto_renew_user: "{{ username }}"
+    certbot_auto_renew_hour: "8"
+    certbot_auto_renew_minute: "0"
+    certbot_auto_renew_options: "--quiet"
+    certbot_create_if_missing: true
+    certbot_create_method: standalone
+    certbot_admin_email: "{{ contact_email }}"
+    certbot_create_standalone_stop_services:
+      - nginx
+    certbot_certs:
+      - domains: "{{ domains }}"

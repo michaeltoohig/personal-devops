@@ -6,7 +6,7 @@ module "vps_provision" {
   source = "../../../modules/vps_provision"
   token = "${var.linode_token}"
 
-  label = "my-test-linode"
+  label = "${local.environment_name}-vps"
   image = "linode/debian12"
   linode_region = "us-east"
   linode_instance_type = "g6-nanode-1"
@@ -28,6 +28,6 @@ module "vps_firewall" {
   source = "../../../modules/vps_firewall"
   token = "${var.linode_token}"
 
-  label = "${local.environment_name}-test-firewall"
+  label = "${local.environment_name}-firewall"
   vps_instance_id = module.vps_provision.vps_instance_id
 }

@@ -1,0 +1,60 @@
+---
+- name: Clone the repository
+  git:
+    repo: "{{ git_repo_url }}"
+    dest: "{{ app_directory }}"
+    version: "{{ git_branch }}"
+  become: true
+
+- name: x
+  file:
+    path: "{{ app_directory }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: "0750"
+
+- name: Copy env file
+  template:
+    src: "../templates/env.template.j2"
+    dest: "{{ app_directory }}/config/.env.production"
+    # dest: "{{ app_directory }}/config/.env.{{ environment_name }}"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: "0640"
+
+- name: Copy compose env file
+  template:
+    src: "../templates/compose.env.j2"
+    dest: "{{ app_directory }}/config/.env.compose"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: "0640"
+
+- name: Create data directory
+  file:
+    path: "{{ data_directory }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: www-data
+    mode: "0750"
+
+# - name: Create data directory
+#   file:
+#     path: "{{ data_directory }}"
+#     state: directory
+#     owner: "{{ app_user }}"
+#     group: www-data
+#     mode: "0750"
+- name: Build and run Docker containers
+  community.docker.docker_compose_v2:
+    project_src: "{{ app_directory }}"
+    env_files:
+      - config/.env.compose
+    files:
+      - "docker-compose.production.yml"
+      # - "docker-compose.{{ environment_name }}.yml"
+    state: present
+    recreate: always
+  become: true
+  # become_user: "{{ app_user }}"
