@@ -10,3 +10,17 @@
     nginx_ppa_version: stable
     nginx_service_state: started
     nginx_service_enabled: true
+
+- name: Copy Nginx snippet for gzip
+  template:
+    src: ../templates/snippet_gzip.conf.j2
+    dest: /etc/nginx/snippets/gzip.conf
+
+- name: Copy Nginx snippet for ssl
+  template:
+    src: ../templates/snippet_ssl.conf.j2
+    dest: /etc/nginx/snippets/ssl.conf
+
+- name: Generate Diffie-Hellman parameters with the default size (4096 bits)
+  community.crypto.openssl_dhparam:
+    path: "{{ ssl_dhparams_path }}"

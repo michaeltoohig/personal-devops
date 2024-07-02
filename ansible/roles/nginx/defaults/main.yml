@@ -1,0 +1,2 @@
+---
+ssl_dhparams_path: "/etc/ssl/certs/dhparams.pem"
