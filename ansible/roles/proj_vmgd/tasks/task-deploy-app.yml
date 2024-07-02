@@ -6,6 +6,18 @@
     version: "{{ git_branch }}"
   become: true
 
+- name: Get git commit hash
+  command: git rev-parse --short=8 HEAD
+  register: git_commit_hash
+  args:
+    chdir: "{{ app_directory }}"
+  become: true
+
+- name: Create app/_version.py file
+  copy:
+    content: 'VERSION_COMMIT="{{ git_commit_hash.stdout }}"'
+    dest: "{{ app_directory }}/app/_version.py"
+
 - name: Copy env file
   template:
     src: "../templates/env.template.j2"
