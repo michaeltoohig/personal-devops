@@ -1,0 +1,17 @@
+---
+- name: Copy Nginx site config
+  template:
+    src: "../templates/nginx.conf.j2"
+    dest: "/etc/nginx/sites-available/{{ app_name }}.conf"
+
+- name: Enable Nginx site
+  file:
+    src: /etc/nginx/sites-available/{{ app_name }}.conf
+    dest: /etc/nginx/sites-enabled/{{ app_name }}.conf
+    state: link
+
+- name: Restart Nginx
+  systemd:
+    name: nginx
+    enabled: true
+    state: restarted

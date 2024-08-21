@@ -1,0 +1,14 @@
+app_name: vfsc-graph
+compose_project_name: vfsc-graph
+
+app_port: 7030
+
+domain: unofficial-vfsc-graph.michaeltoohig.com
+
+git_repo_url: https://github.com/michaeltoohig/unofficial-vfsc-graph.git
+git_branch: master
+
+cache_timeout: 300
+
+app_db_file: "app.db"
+graph_db_file: "graph.db"

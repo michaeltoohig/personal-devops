@@ -1,0 +1,39 @@
+---
+- name: Run common role
+  hosts: all
+  become: true
+  vars_files:
+    - ../environments/{{ environment_name }}/vars/proj_vfsc_vars.yml
+  roles:
+    - ../roles/common
+
+- name: Run Docker role
+  hosts: all
+  become: true
+  roles:
+    - ../roles/docker
+  vars_files:
+    - ../environments/{{ environment_name }}/vars/proj_vfsc_vars.yml
+  vars:
+    my_docker_users:
+      - "{{ username }}"
+    include_optional_compose_systemd_setup: false
+
+- name: Run nginx role
+  hosts: all
+  become: true
+  roles:
+    - ../roles/nginx
+  vars_files:
+    - ../environments/{{ environment_name }}/vars/proj_vfsc_vars.yml
+
+- name: Run application role
+  hosts: all
+  become: true
+  vars_files:
+    - ../environments/{{ environment_name }}/vars/proj_vfsc_vars.yml
+    - ../environments/{{ environment_name }}/vars/proj_vfsc_vault.yml
+  vars:
+    app_directory: "/opt/{{ app_name }}"
+  roles:
+    - ../roles/proj_vfsc

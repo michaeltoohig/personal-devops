@@ -1,4 +1,4 @@
-upstream app_server {
+upstream vfsc_web_server {
     server 127.0.0.1:{{ app_port }} fail_timeout=0;
 }
 
@@ -8,7 +8,7 @@ server {
     server_name {{ domain }};
 
     keepalive_timeout 5;
-    client_max_body_size 4G;
+    client_max_body_size 10M;
 
     access_log /var/log/nginx-access-{{ app_name }}.log;
     error_log /var/log/nginx-error-{{ app_name }}.log;
@@ -19,7 +19,7 @@ server {
         proxy_redirect off;
 
         if (!-f $request_filename) {
-            proxy_pass http://app_server;
+            proxy_pass http://vfsc_web_server;
             break;
         }
     }
