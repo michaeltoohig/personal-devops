@@ -14,6 +14,9 @@ ssh-keygen -N "" -C root@example.com -f keys/example-root
 ssh-keygen -N "" -C user@example.com -f keys/example-user
 ```
 
+Alternatively, use existing SSH keys from `~/.ssh` or elsewhere.
+Just need to update the `.tfvars` file to point to these key files.
+
 Second, prepare the environment variables for OpenTofu.
 Each environment is a separate directory in the `opentofu/environments` directory.
 
